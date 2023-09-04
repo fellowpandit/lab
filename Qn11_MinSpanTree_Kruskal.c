@@ -1,114 +1,103 @@
-#include <stdio.h>
-#include <time.h>
-
-// Define a structure for representing edges
-struct Edge {
-    int u, v, cost;
+#include<stdio.h>
+#include<time.h>
+struct edge
+{
+    int u,v,cost;
 };
-
-typedef struct Edge Edge;
-
-// Function to find the root of a vertex in a disjoint set
-int find(int vertex, int parent[]) {
-    while (parent[vertex] != vertex) {
-        vertex = parent[vertex];
+typedef struct edge edge;
+int find(int v,int parent[])
+{
+    while(parent[v]!=v)
+    {
+        v=parent[v];
     }
-    return vertex;
+    return v;
 }
-
-// Function to union two vertices in a disjoint set
-void unionVertices(int i, int j, int parent[]) {
-    if (i < j)
-        parent[j] = i;
+void union_ij(int i,int j,int parent[])
+{
+    if(i<j)
+        parent[j]=i;
     else
-        parent[i] = j;
+        parent[i]=j;
 }
-
-// Kruskal's algorithm to find the minimum spanning tree
-void kruskal(int numVertices, Edge edges[], int numEdges) {
-    int count, k, i, sum, u, v, j, tree[10][10], parent[10];
-    Edge temp;
-    count = 0;
-    k = 0;
-    sum = 0;
-
-    // Sort edges in ascending order based on their costs
-    for (i = 0; i < numEdges; i++) {
-        for (j = 0; j < numEdges - 1; j++) {
-            if (edges[j].cost > edges[j + 1].cost) {
-                temp.u = edges[j].u;
-                temp.v = edges[j].v;
-                temp.cost = edges[j].cost;
-                edges[j].u = edges[j + 1].u;
-                edges[j].v = edges[j + 1].v;
-                edges[j].cost = edges[j + 1].cost;
-                edges[j + 1].u = temp.u;
-                edges[j + 1].cost = temp.cost;
+void kruskal(int n,edge e[],int m)
+{
+    int count,k,i,sum,u,v,j,t[10][10],p,parent[10];
+    edge temp;
+    count=0;
+    k=0;
+    sum=0;
+    for(i=0;i<m;i++)
+    {
+        for(j=0;j<m-1;j++)
+        {
+            if(e[j].cost>e[j+1].cost)
+            {
+                temp.u=e[j].u;
+                temp.v=e[j].v;
+                temp.cost=e[j].cost;
+                e[j].u=e[j+1].u;
+                e[j].v=e[j+1].v;
+                e[j].cost=e[j+1].cost;
+                e[j+1].u=temp.u;
+                e[j+1].cost=temp.cost;
             }
         }
     }
-
-    // Initialize disjoint set for vertices
-    for (i = 0; i < numVertices; i++) {
-        parent[i] = i;
-    }
-
-    int edgeIndex = 0;
-    while (count != numVertices - 1) {
-        u = edges[edgeIndex].u;
-        v = edges[edgeIndex].v;
-        i = find(u, parent);
-        j = find(v, parent);
-
-        if (i != j) {
-            tree[k][0] = u;
-            tree[k][1] = v;
+    for(i=0;i<n;i++)
+        parent[i]=i;
+    p=0;
+    while(count!=n-1)
+    {
+        u=e[p].u;
+        v=e[p].v;
+        i=find(u,parent);
+        j=find(v,parent);
+        if(i!=j)
+        {
+            t[k][0]=u;
+            t[k][1]=v;
             k++;
             count++;
-            sum += edges[edgeIndex].cost;
-            unionVertices(i, j, parent);
+            sum+=e[p].cost;
+            union_ij(i,j,parent);
         }
-
-        edgeIndex++;
+        p++;
     }
-
-    if (count == numVertices - 1) {
-        printf("A spanning tree exists\n");
+    if(count==n-1)
+    {
+        printf("Spanning tree exists\n");
         printf("The spanning tree is as follows:\n");
-        for (i = 0; i < numVertices - 1; i++) {
-            printf("%d  %d\t", tree[i][0], tree[i][1]);
+        for(i=0;i<n-1;i++)
+        {
+            printf("%d  %d\t",t[i][0],t[i][1]);
         }
-        printf("\nThe cost of the spanning tree is %d\n", sum);
-    } else {
-        printf("\nA spanning tree does not exist\n");
+        printf("\nThe cost of the spanning tree is %d\n",sum);
     }
+    else
+        printf("\n spanning tree does not exist");
 }
-
-int main() {
-    int numVertices, numEdges, vertexA, vertexB, edgeCost;
-    double elapsedTime;
-    clock_t startTime, endTime;
-    Edge edges[20];
-
-    printf("Enter the number of vertices: ");
-    scanf("%d", &numVertices);
-    printf("Enter the number of edges: ");
-    scanf("%d", &numEdges);
-    printf("Enter the edge list (u  v  cost):\n");
-
-    for (int i = 0; i < numEdges; i++) {
-        scanf("%d %d %d", &vertexA, &vertexB, &edgeCost);
-        edges[i].u = vertexA;
-        edges[i].v = vertexB;
-        edges[i].cost = edgeCost;
+void main()
+{
+    int n,m,a,b,i,cost;
+    double clk;
+    clock_t starttime,endtime;
+    edge e[20];
+    printf("Enter the number of vertices:");
+    scanf("%d",&n);
+    printf("Enter the number of edges:\n");
+    scanf("%d",&m);
+    printf("Enter the edge list( u  v  cost)\n");
+    for(i=0;i<m;i++)
+    {
+        scanf("%d%d%d",&a,&b,&cost);
+        e[i].u=a;
+        e[i].v=b;
+        e[i].cost=cost;
     }
-
-    startTime = clock();
-    kruskal(numVertices, edges, numEdges);
-    endTime = clock();
-    elapsedTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
-
-    printf("The time taken is %f seconds\n", elapsedTime);
-
-    return 0;
+    starttime=clock();
+    kruskal(n,e,m);
+    endtime=clock();
+    clk=(double)(endtime-starttime)/CLOCKS_PER_SEC;
+    printf("The time taken is %f\n",clk);
 }
